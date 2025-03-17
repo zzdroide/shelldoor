@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>TOTP</title>
+  <meta name="viewport" content="width=200" />
+  <base href="/totp/">
+</head>
+<body>
+  <input id="secret" autocomplete="off" placeholder="base32 secret" pattern="[a-zA-Z2-7]{16,}" required>
+  <pre id="pin" style="font-size: 16px"></pre>
+  <p id="exp" style="font-size: 10px"></p>
+
+  <script>
+    // Verbose errors, otherwise just nothing happens
+    window.addEventListener('error', ({ message }) => {
+      alert(message);
+    });
+    window.addEventListener('unhandledrejection', ({ reason }) => {
+      alert(reason);
+    });
+  </script>
+
+  <script src="totp-generator.js"></script>
+
+  <script>
+
+    const secret = document.getElementById('secret');
+    const pin    = document.getElementById('pin');
+    const exp    = document.getElementById('exp');
+    let lastOtp;
+
+    setInterval(async () => {
+      if (!secret.validity.valid) return;
+
+      const { otp, expires } = await TOTP.generate(secret.value);
+      expSec = Math.round((expires - Date.now()) / 1000);
+      exp.innerText = `${expSec}s`;
+
+      if (otp !== lastOtp) {
+        // Update only on changes, otherwise text selection is cleared
+        lastOtp = otp;
+        pin.innerText = otp;
+      }
+    }, 1000);
+
+  </script>
+</body>
+</html>

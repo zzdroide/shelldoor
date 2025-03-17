@@ -1,0 +1,8 @@
+#%PAM-1.0
+
+auth      include   google-authenticator
+auth      include   base-auth
+account   include   base-account
+password  include   base-password
+session   include   base-session
+session   required  pam_exec.so /usr/local/bin/on_pam_session.sh

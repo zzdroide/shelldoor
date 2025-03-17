@@ -1,0 +1,17 @@
+services:
+  app:
+    container_name: shelldoor_log_rx
+    image: busybox
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:3023:3023
+    volumes:
+      - ./:/host/
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          nc -lp 3023 | tee -a /host/rx.log
+        done
+    init: true

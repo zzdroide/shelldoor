@@ -1,0 +1,1 @@
+auth    required        pam_google_authenticator.so noskewadj echo_verification_code

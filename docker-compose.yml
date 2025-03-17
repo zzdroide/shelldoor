@@ -1,0 +1,27 @@
+services:
+  wetty:
+    image: wettyoss/wetty:2.5
+    restart: unless-stopped
+    environment:
+      BASE: /
+      SSHHOST: sshd
+      SSHUSER: wetty
+      SSHAUTH: keyboard-interactive
+    ports:
+      - 127.0.0.1:3022:3000
+
+  sshd:
+    build:
+      context: .
+      args:
+        TOTP_SECRET: ${TOTP_SECRET:?error}
+        HPASSWORD: ${HPASSWORD:?error}
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+        HOST_USER: ${USER}
+    restart: unless-stopped
+    volumes:
+      - ./alert/:/alert/:rw
+      - ${HOME}/.ssh/:/home/wetty/host_ssh/:ro
+    extra_hosts:
+      - host.docker.internal:host-gateway
